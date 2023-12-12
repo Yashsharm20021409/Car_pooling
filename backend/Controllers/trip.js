@@ -1,5 +1,6 @@
 const Trip = require("../Models/tripModel");
 const User = require("../Models/user");
+const Ride = require("../Models/rides")
 const dotenv = require("dotenv");
 const { Client } = require("@googlemaps/google-maps-services-js");
 var polylineUtil = require("@mapbox/polyline");
@@ -51,6 +52,35 @@ exports.activeTrip = (req, res) => {
       });
     });
   });
+};
+
+exports.allRide = async (req, res) => {
+  try {
+    const filter = { completed: false }
+    const allRide = (await Trip.find(filter).sort({ createdAt: -1 }));
+
+    res.status(201).json({
+      success: true,
+      allRide,
+    });
+  } catch (error) {
+    res.status(500).json(error)
+  }
+};
+
+exports.getRide = async (req, res) => {
+  try {
+    // console.log(req.params.id)
+    const filter = { rideId: req.params.id }
+    const ride = await Ride.find(filter);
+    // console.log(ride)
+
+    res.status(201).json({
+      ride,
+    });
+  } catch (error) {
+    res.status(500).json(error)
+  }
 };
 
 exports.drive = (req, res) => {
@@ -148,18 +178,18 @@ exports.ride = (req, res) => {
           }
           trip.waypoints = [...trip.waypoints, req.body.src, req.body.dst];
           mapsClient.directions({
-              params: {
-                origin: trip.source,
-                destination: trip.destination,
-                waypoints: trip.waypoints,
-                drivingOptions: {
-                  departureTime: new Date(trip.dateTime), // for the time N milliseconds from now.
-                },
-                optimize: true,
-                key: process.env.MAPS_API_KEY,
+            params: {
+              origin: trip.source,
+              destination: trip.destination,
+              waypoints: trip.waypoints,
+              drivingOptions: {
+                departureTime: new Date(trip.dateTime), // for the time N milliseconds from now.
               },
-              timeout: 2000, // milliseconds
-            })
+              optimize: true,
+              key: process.env.MAPS_API_KEY,
+            },
+            timeout: 2000, // milliseconds
+          })
             .then((r) => {
               const routeArray = polylineUtil.decode(
                 r.data.routes[0].overview_polyline.points
@@ -189,6 +219,37 @@ exports.ride = (req, res) => {
       return res.status(400).end();
     }
   });
+};
+
+exports.bookRide = (req, res) => {
+  User.findById(req.auth._id, (err, user) => {
+    if (user.activeTrip == undefined || user.activeTrip == null) {
+      // 
+      // let startDateTime = new Date(req.body.dateTime);
+      // startDateTime.setMinutes(startDateTime.getMinutes() - offsetDurationInMinutes);
+      // let endDateTime = new Date(req.body.dateTime);
+      // endDateTime.setMinutes(endDateTime.getMinutes() + offsetDurationInMinutes);
+      console.log(req.body)
+      const rideObj = new Ride({
+        source: req.body.source,
+        destination: req.body.destination,
+        dateTime: new Date(req.body.date),
+        rideId: req.body.rideId,
+      });
+
+      rideObj.save((err, ride) => {
+        if (err)
+          return res.status(500).end();
+        res.status(200).json(ride);
+
+        // return res.status(500).end();
+      });
+    }
+    else {
+      res.statusMessage = "A ride is already active";
+      return res.status(400).end();
+    }
+  })
 };
 
 exports.cancelTrip = (req, res) => {
@@ -362,3 +423,5 @@ exports.isDriver = (req, res) => {
     } else res.status(200).json({ isdriver: user.trip_role_driver });
   });
 };
+
+

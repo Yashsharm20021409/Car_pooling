@@ -83,6 +83,12 @@ export default function Navbar({setToken, activeTrip, name }) {
                                 <AiIcons.AiOutlineCar style={{ color: 'black', marginBottom: '0.1rem', marginRight: '0.3rem' }} data-test='activeTrip-icon' /> Active Trip
                             </Button>
                         </Link>
+                        
+                        <Link to='/get-ride'>
+                            <Button variant='warning' className={activeTrip ? 'hidden' : 'main-button'} disabled={'/get-ride' === location.pathname} >
+                                <AiIcons.AiTwotoneCar style={{ color: 'black', marginBottom: '0.1rem', marginRight: '0.3rem' }} data-test='drive-icon' /> Get-Ride
+                            </Button>
+                        </Link>
                         <Link to='/drive'>
                             <Button variant='warning' className={activeTrip ? 'hidden' : 'main-button'} disabled={'/drive' === location.pathname} data-test="drive-button">
                                 <AiIcons.AiTwotoneCar style={{ color: 'black', marginBottom: '0.1rem', marginRight: '0.3rem' }} data-test='drive-icon' /> Drive

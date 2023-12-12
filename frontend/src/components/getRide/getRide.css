@@ -1,0 +1,53 @@
+.detail-container{
+    display: flex;
+    flex-direction: column;
+}
+
+.detail-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    margin: .625rem 0; 
+}
+
+.detail-heading{
+    margin: 0rem .625rem;
+    font-size: 1.25rem;
+}
+/* .source{
+    text-align: start;
+    margin-right: 80%;
+} */
+
+.card-body{
+    padding: 25px;
+    background-color: rgb(250, 246, 246)
+}
+
+.trip-card{
+    margin: 20px;
+    background-color: aqua;
+}
+.groupIcon{
+    margin-right: 30px !important;
+}
+.tripImage{
+    height: 1.625rem;
+    width: 4%;
+    margin-right: 1 rem;
+}
+
+.book-ride-row{
+    justify-content: center;
+}
+.book-ride{
+    border: none;
+    background-color: #ffc107;
+    cursor: pointer;
+    font-weight: bold;
+    padding-left: 0.75rem;
+    padding-right: 0.375rem;
+    border-radius: 10px;
+    padding: 15px;
+}

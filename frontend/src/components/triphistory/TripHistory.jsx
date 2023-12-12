@@ -8,15 +8,19 @@ import groupImg from '../../group.svg';
 import './TripHistory.css';
 import Cookies from 'js-cookie';
 import Geocode, { fromLatLng } from "react-geocode";
+import axios from 'axios'
 
 export default function TripHistory() {
     const getLocFromCoords = async (coords) => {
         let lat = coords['lat']
         let long = coords['lng']
 
-        const res = await fromLatLng(lat, long)
-        const location = await res.results[0].formatted_address;
-        return location
+        // console.log(lat,long)
+
+        const res = await axios.get(`https://geocode.maps.co/reverse?lat=${lat}&lon=${long}`)
+        const location = await res?.data?.display_name;
+        // console.log(location)
+        return location.slice(0,45) + '...'
     }
 
     const getDateandTime = (dtString) => {
@@ -38,17 +42,15 @@ export default function TripHistory() {
         })
         const data = await response.json()
 
-        // console.log(data);
-
         // Parse Data
         let tempArray = []
         for (let i = 0; i < data.length; i++) {
             let thisTrip = data[i]
             let newTrip = {}
             let loc;
-            // loc = await getLocFromCoords(thisTrip["source"])
+            loc = await getLocFromCoords(thisTrip["source"])
             newTrip["source"] = loc
-            // loc = await getLocFromCoords(thisTrip["destination"])
+            loc = await getLocFromCoords(thisTrip["destination"])
             newTrip["destination"] = loc
             newTrip["tripDate"] = getDateandTime(thisTrip["dateTime"])
             newTrip["riderCount"] = thisTrip["riders"].length
@@ -111,10 +113,8 @@ export default function TripHistory() {
     );
     return (
         <>
-        
-            { 
-            tripDetails?.length === 0 ? <h1 style={{ width: '100%', height: '100%', textAlign: 'center', marginTop:'30vh' }}>No trips found</h1> :
-                tripDetails?.map((data, index) => {
+            {tripDetails.length === 0 ? <h1 style={{ width: '100%', height: '100%', textAlign: 'center', marginTop:'30vh' }}>No trips found</h1> :
+                tripDetails.map((data, index) => {
                     return (
                         <CardView key={index} {...data} />
                     )

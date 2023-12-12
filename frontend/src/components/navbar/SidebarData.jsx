@@ -11,6 +11,11 @@ export const SidebarData = [
     icon: <AiIcons.AiOutlineCar />,
   },
   {
+    title: 'Active Ride',
+    path: '/active-ride',
+    icon: <AiIcons.AiOutlineCar />,
+  },
+  {
     title: 'Trip History',
     path: '/trip-history',
     icon: <BsIcons.BsCardChecklist />,
