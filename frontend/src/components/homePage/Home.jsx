@@ -17,7 +17,7 @@ const Home = ({ token }) => {
       <main className="main">
         <section className="hero">
           <div className="hero-content">
-            <video width="750" height="500"  controls autoPlay loop muted> 
+            <video width="750" height="500" controls autoPlay loop muted>
               <source src={video} type="video/mp4" />
             </video>
             <h2 className="hero-text">Find Your Ride</h2>

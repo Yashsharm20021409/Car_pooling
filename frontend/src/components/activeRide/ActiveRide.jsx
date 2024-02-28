@@ -55,7 +55,7 @@ const ActiveRide = () => {
   const [orderId, setOrderId] = useState("");
 
   useEffect(() => {
-    const fetchTrip = async() => {
+    const fetchTrip = async () => {
       try {
         const data = await axios.get(
           `http://localhost:8000/api/trip/${rideInfo.rideId}`
@@ -66,9 +66,9 @@ const ActiveRide = () => {
         setdestination(data.data.ride.destination);
         setdatetime(getDateandTime(data.data.ride.dateTime));
         setPaid(data.data.ride.payment);
-        setOrderId(data.data.ride._id)
+        setOrderId(data.data.ride._id);
       } catch (error) {
-        console.log(error);     
+        console.log(error);
       }
     };
     fetchTrip();
@@ -110,8 +110,6 @@ const ActiveRide = () => {
     "pk_test_51Mj5ZDSAj0EIjVubJGOehQ8kTZes4xSWiUFqZcWmBf3yFoOn7flyyqZJFt3WxqEKIF07jA7EvSGWh6zlCnteBGWY00EfjfQ4SS";
   const [stripeToken, setStripeToken] = useState(null);
   const [amountPaid, setPaid] = useState(false);
-
-
 
   const onToken = async (token) => {
     setStripeToken(token);
