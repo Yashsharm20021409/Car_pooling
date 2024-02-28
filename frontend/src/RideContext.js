@@ -20,6 +20,8 @@ const RideProvider = ({ children }) => {
     localStorage.setItem('rideInfo', JSON.stringify(rideInfo));
   }, [rideInfo]);
 
+  // console.log("RideInfo:", rideInfo);
+
   return (
     <RideContext.Provider value={{ rideInfo, setRideDetails }}>
       {children}

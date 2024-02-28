@@ -26,6 +26,7 @@
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.1.8",
     "node-geometry-library": "^1.2.6",
+    "nodemailer": "^6.9.10",
     "nodemon": "^2.0.15",
     "supertest": "^6.2.2",
     "swagger-jsdoc": "^6.1.0",

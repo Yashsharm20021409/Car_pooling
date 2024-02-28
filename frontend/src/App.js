@@ -17,6 +17,8 @@ import GetRide from "./components/getRide/GetRide"
 import { useLoadScript } from '@react-google-maps/api';
 import UseActiveTrip from './libraries/UseActiveTrip';
 import ActiveRide from "./components/activeRide/ActiveRide"
+import { Elements } from "@stripe/react-stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
 
 const libraries = ['places'];
 

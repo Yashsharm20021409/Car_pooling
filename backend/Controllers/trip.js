@@ -7,6 +7,7 @@ var polylineUtil = require("@mapbox/polyline");
 const mapsClient = new Client({});
 const { PolyUtil } = require("node-geometry-library");
 dotenv.config();
+const nodeMailer = require('nodemailer')
 
 // const MS_PER_MINUTE = 60000;
 const offsetDurationInMinutes = 15;
@@ -69,10 +70,12 @@ exports.allRide = async (req, res) => {
 };
 
 exports.getRide = async (req, res) => {
+  // console.log(req.params.id);
   try {
     // console.log(req.params.id)
-    const filter = { rideId: req.params.id }
-    const ride = await Ride.find(filter);
+    // const filter = { _id: req.params.id }
+    const ride = await Ride.findById(req.params.id);
+    // console.log(ride)
     // console.log(ride)
 
     res.status(201).json({
@@ -222,19 +225,26 @@ exports.ride = (req, res) => {
 };
 
 exports.bookRide = (req, res) => {
-  User.findById(req.auth._id, (err, user) => {
+  User.findById(req.auth._id, async (err, user) => {
     if (user.activeTrip == undefined || user.activeTrip == null) {
       // 
       // let startDateTime = new Date(req.body.dateTime);
       // startDateTime.setMinutes(startDateTime.getMinutes() - offsetDurationInMinutes);
       // let endDateTime = new Date(req.body.dateTime);
       // endDateTime.setMinutes(endDateTime.getMinutes() + offsetDurationInMinutes);
-      console.log(req.body)
+      const userFind = await User.findById(req.auth._id);
+      const userEmail = userFind.email;
       const rideObj = new Ride({
         source: req.body.source,
         destination: req.body.destination,
         dateTime: new Date(req.body.date),
         rideId: req.body.rideId,
+      });
+
+      await sendMail({
+        email: userEmail,
+        subject: "Car booking Request",
+        message: `Hello ${userFind.name}, Your Car ride has been Booked Please Track Your journey on our Website Thankyou.`,
       });
 
       rideObj.save((err, ride) => {
@@ -424,4 +434,47 @@ exports.isDriver = (req, res) => {
   });
 };
 
+exports.paymentDone = async (req, res) => {
+  console.log("pagee")
+  try {
 
+    // Find the ride document by rideId
+    const ride = await Ride.findById(req.params.id);
+
+    if (!ride) {
+      return res.status(404).json({ error: 'Ride not found' });
+    }
+
+    // Update payment status to true
+    ride.payment = true;
+    await ride.save();
+
+    res.status(200).json({ message: 'Payment updated successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'An error occurred while updating payment status' });
+  }
+}
+
+
+// Function to send email notification
+const sendMail = async (options) => {
+  const transporter = nodeMailer.createTransport({
+    host: "smtp.gmail.com",
+    port: "465",
+    service: 'Gmail',
+    auth: {
+      user: "yug20020706@gmail.com",
+      pass: "uiwathyjzuwhyamn",
+    },
+  });
+
+  const mailToUser = {
+    from: "yug20020706@gmail.com",
+    to: options.email,
+    subject: options.subject,
+    text: options.message
+  }
+
+  await transporter.sendMail(mailToUser);
+};

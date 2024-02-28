@@ -104,7 +104,7 @@ export default function Navbar({setToken, activeTrip, name }) {
                 {/* Primary Navbar end*/}
 
                 {/* Sidebar*/}
-                { Cookies.get('tokken') ?
+                {/* { Cookies.get('tokken') ? */}
                 <nav className={sidebar ? 'nav-menu active' : 'nav-menu'}>
                     <ul className='sidebar-top-items' onClick={showSidebar}>
                         <li className='navbar-toggle' style={{ paddingLeft: '1rem' }}>
@@ -144,7 +144,8 @@ export default function Navbar({setToken, activeTrip, name }) {
                     </ul> 
                     
                     
-                </nav>:""}
+                </nav>
+                {/* :""} */}
                </div>
             </IconContext.Provider>
         </>

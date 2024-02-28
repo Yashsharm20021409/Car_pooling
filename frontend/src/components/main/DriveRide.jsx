@@ -185,6 +185,9 @@ export default function DriveRide({ type, setToken, setActiveTrip }) {
         setRouteResp(null);
     }, [mapCoords]);
 
+
+    
+
     return (
         <>
             <Container fluid="lg">

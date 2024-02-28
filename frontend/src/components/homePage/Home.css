@@ -5,7 +5,17 @@ body {
   margin: 0;
   padding: 0;
 }
-
+video {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  z-index: -1;
+  transition: 5s;
+}
 .app {
   text-align: center;
   overflow-x: hidden;
@@ -28,7 +38,7 @@ body {
 .hero {
   height: 500px;
   /* background-image: url('D:\Car_pooling\frontend\src\components\homePage\vecteezy_online-transportation-urban-business-for-landing-page-web-website-homepage-mobile-apps-ui-ux-poster-banner-template-flyer_1436637\Project_1-07.jpg'); Replace with your image URL */
-  background-image: url('D:\Car_pooling\frontend\src\components\homePage\HKxgZC0-black-car-wallpaper.jpg');
+  /* background-image: url('D:\Car_pooling\frontend\src\components\homePage\HKxgZC0-black-car-wallpaper.jpg'); */
   background-attachment: fixed;
   background-position: center;
   background-repeat: no-repeat;

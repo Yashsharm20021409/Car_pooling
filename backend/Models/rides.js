@@ -21,6 +21,10 @@ const rideSchema = new schema({
         type: Boolean,
         default: false
     },
+    payment:{
+        type:Boolean,
+        default:false,
+    },
 }, { timestamps: true });
 
 module.exports = mongoose.model("rides", rideSchema)

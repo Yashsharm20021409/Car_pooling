@@ -56,3 +56,14 @@
 .heading{
     font-size: 1.5rem;
 }
+
+.payment input{
+    padding: 10px;
+    /* color: rgb(80, 80, 240); */
+    border-radius: 5px;
+    /* border: 3px; */
+}
+
+.paymentDetails{
+    margin-top: 20px;
+}
