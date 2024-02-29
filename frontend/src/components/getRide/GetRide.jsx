@@ -25,6 +25,7 @@ export default function GetRide() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredTripDetails, setFilteredTripDetails] = useState([]);
   const [tripDetails, setTripDetails] = useState([]);
+  const [price, setPrice] = useState(0);
 
   // Your existing code
 
@@ -71,7 +72,76 @@ export default function GetRide() {
     return date + " @ " + time[0] + ":" + time[1];
   };
 
-  
+  const predictFare = (formdata) => {
+    console.log(formdata);
+    fetch("http://127.0.0.1:5000/predict_fare", {
+      method: "POST",
+      body: JSON.stringify(formdata),
+      mode: "cors",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setPrice(Math.round(data.fare_amount));
+        console.log("data" + data);
+      })
+      .catch((error) => console.error("Error:", error));
+  };
+
+  const getWeekdayNumber = (weekday) => {
+    switch (weekday) {
+      case "sun":
+        return 1;
+      case "mon":
+        return 2;
+      case "tue":
+        return 3;
+      case "wed":
+        return 4;
+      case "thu":
+        return 5;
+      case "fri":
+        return 6;
+      case "sat":
+        return 7;
+      default:
+        return -1; // Return -1 for unknown weekdays
+    }
+  };
+
+  const getMonthNumber = (month) => {
+    switch (month) {
+      case "jan":
+        return 1;
+      case "feb":
+        return 2;
+      case "mar":
+        return 3;
+      case "apr":
+        return 4;
+      case "may":
+        return 5;
+      case "jun":
+        return 6;
+      case "jul":
+        return 7;
+      case "aug":
+        return 8;
+      case "sep":
+        return 9;
+      case "oct":
+        return 10;
+      case "nov":
+        return 11;
+      case "dec":
+        return 12;
+      default:
+        return -1; // Return -1 for unknown months
+    }
+  };
+
   const fetchData = async () => {
     const response = await fetch("http://localhost:8000/api/trip/allRide", {
       method: "GET",
@@ -111,6 +181,30 @@ export default function GetRide() {
           newTrip["riderCount"] = thisTrip["riders"].length;
           newTrip["completed"] = thisTrip["completed"];
           newTrip["rideId"] = thisTrip["_id"];
+
+          const dateData = newTrip["tripDate"];
+          const day = dateData.slice(8, 11);
+          const hour = 4;
+          let day_of_week = dateData.slice(0, 3);
+          let pick_up_month = dateData.slice(4, 7);
+          const year = dateData.slice(11, 15);
+
+          const formData = {
+            pickup_latitude: thisTrip["source"].lat,
+            pickup_longitude: thisTrip["source"].lng,
+            dropoff_latitude: thisTrip["destination"].lat, // Corrected: use lat instead of lng
+            dropoff_longitude: thisTrip["destination"].lng,
+            passenger_count: 5,
+            pickup_day: day,
+            pickup_hour: 4,
+            pickup_day_of_week: 2,
+            pickup_month: 5,
+            pickup_year: year,
+          };
+
+          predictFare(formData);
+
+          console.log("Price" + price);
 
           success = true;
         } catch (error) {
@@ -179,7 +273,7 @@ export default function GetRide() {
         .then((responseJson) => {
           const rideId = responseJson._id;
           // console.log(rideId)
-          setRideDetails({ rideId});
+          setRideDetails({ rideId });
           // console.log();
           navigate("/active-ride");
         })
@@ -197,57 +291,55 @@ export default function GetRide() {
     tripDate = "defaultDate",
     rideID,
   }) => (
-    <div >
+    <div>
+      <div className="card-body mb-4 mt-4 mx-4 text-black" ref={divRef}>
+        <div className="detail-container">
+          <div className="detail-row">
+            <img className="tripImage" src={sourceImg}></img>
+            <h6 className="detail-heading">Source: </h6>
+            <h6 className="detail-heading source-info">{source}</h6>
+          </div>
+        </div>
 
-    
-    <div className="card-body mb-4 mt-4 mx-4 text-black" ref={divRef}>
-      <div className="detail-container">
-        <div className="detail-row">
-          <img className="tripImage" src={sourceImg}></img>
-          <h6 className="detail-heading">Source: </h6>
-          <h6 className="detail-heading source-info">{source}</h6>
+        <div className="detail-container">
+          <div className="detail-row">
+            <img className="tripImage" src={destinationImg}></img>
+            <h6 className="detail-heading">Destiation: </h6>
+            <h6 className="detail-heading destination-info">{destination}</h6>
+          </div>
+        </div>
+
+        <hr></hr>
+
+        <div className="detail-container">
+          <div className="detail-row">
+            <img className="tripImage" src={dtImg}></img>
+            <h6 className="detail-heading">Date and time: </h6>
+            <h6 className="detail-heading date-info">{tripDate}</h6>
+          </div>
+        </div>
+
+        <div className="detail-container">
+          <div className="detail-row">
+            <img className="tripImage" src={groupImg}></img>
+            <h6 className="detail-heading">Price </h6>
+            <h6 className="detail-heading ride-info">$ {price}</h6>
+          </div>
+        </div>
+
+        <div className="detail-container">
+          <div className="detail-row book-ride-row">
+            <button className="book-ride" onClick={bookRide}>
+              Book Ride
+            </button>
+          </div>
         </div>
       </div>
-
-      <div className="detail-container">
-        <div className="detail-row">
-          <img className="tripImage" src={destinationImg}></img>
-          <h6 className="detail-heading">Destiation: </h6>
-          <h6 className="detail-heading destination-info">{destination}</h6>
-        </div>
-      </div>
-
-      <hr></hr>
-
-      <div className="detail-container">
-        <div className="detail-row">
-          <img className="tripImage" src={dtImg}></img>
-          <h6 className="detail-heading">Date and time: </h6>
-          <h6 className="detail-heading date-info">{tripDate}</h6>
-        </div>
-      </div>
-
-      <div className="detail-container">
-        <div className="detail-row">
-          <img className="tripImage" src={groupImg}></img>
-          <h6 className="detail-heading">RideId: </h6>
-          <h6 className="detail-heading ride-info">{rideID}</h6>
-        </div>
-      </div>
-
-      <div className="detail-container">
-        <div className="detail-row book-ride-row">
-          <button className="book-ride" onClick={bookRide}>
-            Book Ride
-          </button>
-        </div>
-      </div>
-    </div>
     </div>
   );
   return (
     <>
-      <div className="search-container" >
+      <div className="search-container">
         <input
           type="text"
           placeholder="Search by location..."
@@ -267,7 +359,6 @@ export default function GetRide() {
           No rides available for the entered location
         </h1>
       ) : (
-        
         filteredTripDetails?.map((data, index) => {
           return <CardView key={index} {...data} rideID={data.rideId} />;
         })
