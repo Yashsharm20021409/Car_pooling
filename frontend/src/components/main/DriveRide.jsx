@@ -333,7 +333,6 @@ import "react-datepicker/dist/react-datepicker.css";
 import Cookies from "js-cookie";
 import Geocode, { fromLatLng, setKey } from "react-geocode";
 
-setKey("AIzaSyBHTIk1UfmtCLrZvuMJoOU8XVqx8OUwUhs");
 
 const mapContainerStyle = {
   height: "60vh",

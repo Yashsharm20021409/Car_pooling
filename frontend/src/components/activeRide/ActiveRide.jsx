@@ -15,11 +15,8 @@ import Footer from "../footer/Footer";
 import StripeCheckout from "react-stripe-checkout";
 import axios from "axios";
 
-<<<<<<< HEAD
-setKey("AIzaSyBHTIk1UfmtCLrZvuMJoOU8XVqx8OUwUhs");
 
-=======
->>>>>>> 1afc4bcdbc7064093c772de24894dbf4f75ce272
+
 const mapContainerStyle = {
   height: "35vh",
   width: "100%",

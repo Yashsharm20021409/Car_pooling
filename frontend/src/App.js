@@ -33,13 +33,8 @@ function App() {
   const { token, name, setToken } = useToken(setActiveTrip);
 
   const { isLoaded, loadError } = useLoadScript({
-<<<<<<< HEAD
-    googleMapsApiKey: "AIzaSyBHTIk1UfmtCLrZvuMJoOU8XVqx8OUwUhs",
-    libraries
-=======
-    // googleMapsApiKey
+    googleMapsApiKey: "",
     libraries,
->>>>>>> 1afc4bcdbc7064093c772de24894dbf4f75ce272
   });
 
   if (loadError) return <h1>Map load error</h1>;

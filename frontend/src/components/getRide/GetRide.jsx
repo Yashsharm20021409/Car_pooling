@@ -14,15 +14,7 @@ import { Navigate, useNavigate } from "react-router-dom";
 import { useRideContext } from "../../RideContext";
 import jsonp from "jsonp";
 
-// EIAFslZHK1SimZjdRIi8AWlncAXM4zTlKq0eTQaT6AE key
-// ildEoz8F8i8KT8CyWWD1 ID
-<<<<<<< HEAD
 
-setKey("AIzaSyBHTIk1UfmtCLrZvuMJoOU8XVqx8OUwUhs");
-=======
-setKey("AIzaSyBHTIk1UfmtCLrZvuMJoOU8XVqx8OUwUhs");
-
->>>>>>> 1afc4bcdbc7064093c772de24894dbf4f75ce272
 export default function GetRide() {
   const divRef = useRef(null);
   const [dataObject1, setDataObject] = useState({});

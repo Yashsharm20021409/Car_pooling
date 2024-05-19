@@ -277,10 +277,8 @@ import Geocode, { fromLatLng, setKey } from "react-geocode";
 
 import "./ActiveTrip.css";
 
-<<<<<<< HEAD
-setKey("AIzaSyBHTIk1UfmtCLrZvuMJoOU8XVqx8OUwUhs");
-=======
->>>>>>> 1afc4bcdbc7064093c772de24894dbf4f75ce272
+
+
 // Map options
 const mapContainerStyle = {
   height: "35vh",
@@ -292,13 +290,8 @@ const options = {
 };
 
 const center = {
-<<<<<<< HEAD
-  lat: 40.706001,
-  lng: -73.997002,
-=======
   lat: 40.73061,
   lng: -73.935242,
->>>>>>> 1afc4bcdbc7064093c772de24894dbf4f75ce272
 };
 export default function ActiveTrip({ setActiveTrip }) {
   // For Map
