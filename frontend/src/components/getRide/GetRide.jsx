@@ -14,6 +14,7 @@ import { Navigate, useNavigate } from "react-router-dom";
 import { useRideContext } from "../../RideContext";
 import jsonp from "jsonp";
 
+setKey(process.env.REACT_APP_MAPS_API_KEY);
 
 export default function GetRide() {
   const divRef = useRef(null);
@@ -28,41 +29,22 @@ export default function GetRide() {
   const [price, setPrice] = useState(0);
 
   // Your existing code
-  const predictFare = async (formdata) => {
-    try {
-      const response = await fetch("http://127.0.0.1:5000/predict_fare", {
-        method: "POST",
-        body: JSON.stringify(formdata),
-        mode: "cors",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      const data = await response.json();
-      return Math.round(data.fare_amount);
-    } catch (error) {
-      console.error("Error:", error);
-      throw error;
-    }
-  };
-
   // const predictFare = async (formdata) => {
-  //   console.log(formdata);
-  //   await fetch("http://127.0.0.1:5000/predict_fare", {
-  //     method: "POST",
-  //     body: JSON.stringify(formdata),
-  //     mode: "cors",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //     },
-  //   })
-  //     .then((response) => response.json())
-  //     .then((data) => {
-  //       // setPrice(Math.round(data.fare_amount));
-  //       return Math.round(data.fare_amount);
-  //       // console.log("data" + data.fare_amount);
-  //     })
-  //     .catch((error) => console.error("Error:", error));
+  //   try {
+  //     const response = await fetch("http://127.0.0.1:5000/predict_fare", {
+  //       method: "POST",
+  //       body: JSON.stringify(formdata),
+  //       mode: "cors",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //     });
+  //     const data = await response.json();
+  //     return Math.round(data.fare_amount);
+  //   } catch (error) {
+  //     console.error("Error:", error);
+  //     throw error;
+  //   }
   // };
 
   useEffect(() => {
@@ -71,7 +53,7 @@ export default function GetRide() {
       trip.source.toLowerCase().includes(searchTerm.toLowerCase())
     );
     setFilteredTripDetails(filtered);
-    console.log("ff", filtered);
+    // console.log("ff", filtered);
   }, [searchTerm, tripDetails]);
 
   const getLocFromCoords = async (coords) => {
@@ -160,7 +142,8 @@ export default function GetRide() {
       };
 
       // console.log(formData.passenger_count);
-      const price = await predictFare(formData);
+      // const price = await predictFare(formData);
+      const price = 12;
       newTrip["Price"] = price;
       // console.log("pp", newTrip["Price"]);
       tempArray.push(newTrip);
@@ -171,33 +154,38 @@ export default function GetRide() {
 
   useEffect(() => {
     fetchData();
-    // console.log("trip: ", tripDetails.data);
   }, []);
 
-  const bookRide = async () => {
-    if (divRef.current) {
-      const sourceElement = divRef.current.querySelector(".source-info");
-      const destinationElement =
-        divRef.current.querySelector(".destination-info");
-      const dateElement = divRef.current.querySelector(".date-info");
-      const rideElement = divRef.current.querySelector(".ride-info");
-      const rideElement2 = divRef.current.querySelector(".ride-info2");
+  const [selectedRide, setSelectedRide] = useState(null);
 
-      const sourceInfo = sourceElement ? sourceElement.textContent : "N/A";
-      const destinationInfo = destinationElement
-        ? destinationElement.textContent
-        : "N/A";
-      const dateInfo = dateElement ? dateElement.textContent : "N/A";
-      const rideInfo1 = rideElement ? rideElement.textContent : "N/A";
-      const rideInfo2 = rideElement2 ? rideElement2.textContent : "0";
+  const bookRide = async (rideInfo) => {
+    // if (divRef.current) {
+    //   const sourceElement = divRef.current.querySelector(".source-info");
+    //   const destinationElement =
+    //     divRef.current.querySelector(".destination-info");
+    //   const dateElement = divRef.current.querySelector(".date-info");
+    //   const rideElement = divRef.current.querySelector(".ride-info");
+    //   const rideElement2 = divRef.current.querySelector(".ride-info2");
 
-      const rideInfo = {
-        source: sourceInfo,
-        destination: destinationInfo,
-        date: dateInfo,
-        rideId: rideInfo1,
-      };
+    //   const sourceInfo = sourceElement ? sourceElement.textContent : "N/A";
+    //   const destinationInfo = destinationElement
+    //     ? destinationElement.textContent
+    //     : "N/A";
+    //   const dateInfo = dateElement ? dateElement.textContent : "N/A";
+    //   const rideInfo1 = rideElement ? rideElement.textContent : "N/A";
+    //   const rideInfo2 = rideElement2 ? rideElement2.textContent : "0";
 
+    //   const rideInfo = {
+    //     source: sourceInfo,
+    //     destination: destinationInfo,
+    //     date: dateInfo,
+    //     rideId: rideInfo1,
+    //   };
+
+    //   console.log("RideInfo", rideInfo);
+    // }
+    if (rideInfo) {
+      // console.log("RideInfo", rideInfo);
       return fetch("http://localhost:8000/api/trip/bookRide", {
         method: "POST",
         headers: {
@@ -214,9 +202,11 @@ export default function GetRide() {
             throw new Error(response.statusText);
         })
         .then((responseJson) => {
-          const rideId = responseJson._id;
-          // console.log(rideId)
-          setRideDetails({ rideId, rideInfo2 });
+          // const rideId = responseJson._id;
+          // console.log("CC",rideInfo?.cost);
+          const rideId = responseJson._id
+          const cost = rideInfo?.cost;
+          setRideDetails({ rideId, cost});
           // console.log();
           navigate("/active-ride");
           // history.push("/active-ride");
@@ -229,15 +219,26 @@ export default function GetRide() {
     }
   };
 
+  const handleCardClick = (data) => {
+    bookRide(data);
+  };
+
+  const handleButtonClick = (e, data) => {
+    e.stopPropagation();
+    bookRide(data);
+  };
+
   const CardView = ({
     source = "Default Title",
     destination = "Default Text",
     tripDate = "defaultDate",
     rideID,
     cost,
+    onCardClick,
+    onButtonClick,
   }) => (
     <div>
-      <div className="card-body mb-4 mt-4 mx-4 text-black" ref={divRef}>
+      <div className="card-body mb-4 mt-4 mx-4 text-black" onClick={onCardClick}>
         <div className="detail-container">
           <div className="detail-row">
             <img className="tripImage" src={sourceImg}></img>
@@ -282,7 +283,7 @@ export default function GetRide() {
 
         <div className="detail-container">
           <div className="detail-row book-ride-row">
-            <button className="book-ride" onClick={bookRide}>
+            <button className="book-ride" onClick={(e) => onButtonClick(e, { source, destination, tripDate, rideID, cost })}>
               Book Ride
             </button>
           </div>
@@ -290,7 +291,7 @@ export default function GetRide() {
       </div>
     </div>
   );
-  
+
   return (
     <>
       <div className="search-container">
@@ -320,27 +321,13 @@ export default function GetRide() {
               {...data}
               rideID={data.rideId}
               cost={filteredTripDetails[index].Price}
+              onCardClick={() => handleCardClick(data)}
+              onButtonClick={handleButtonClick}
             />
           );
         })
         // ""
       )}
-      {/* {tripDetails?.length === 0 ? (
-        <h1
-          style={{
-            width: "100%",
-            height: "100%",
-            textAlign: "center",
-            marginTop: "30vh",
-          }}
-        >
-          Currently! We Have Not Any Active Ride
-        </h1>
-      ) : (
-        tripDetails?.map((data, index) => {
-          return <CardView key={index} {...data} rideID={data.rideId} />;
-        })
-      )} */}
     </>
   );
 }

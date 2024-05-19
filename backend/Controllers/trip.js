@@ -190,7 +190,7 @@ exports.ride = (req, res) => {
                   departureTime: new Date(trip.dateTime), // for the time N milliseconds from now.
                 },
                 optimize: true,
-                key: "",
+                key: process.env.MAPS_KEY,
               },
               timeout: 2000, // milliseconds
             })
@@ -231,13 +231,15 @@ exports.bookRide = (req, res) => {
       // startDateTime.setMinutes(startDateTime.getMinutes() - offsetDurationInMinutes);
       // let endDateTime = new Date(req.body.dateTime);
       // endDateTime.setMinutes(endDateTime.getMinutes() + offsetDurationInMinutes);
+      console.log("Reached")
+      console.log(req.body)
       const userFind = await User.findById(req.auth._id);
       const userEmail = userFind.email;
       const rideObj = new Ride({
         source: req.body.source,
         destination: req.body.destination,
-        dateTime: new Date(req.body.date),
-        rideId: req.body.rideId,
+        dateTime: new Date(req.body.tripDate),
+        rideId: req.body.rideID,
       });
 
       await sendMail({
@@ -247,7 +249,10 @@ exports.bookRide = (req, res) => {
       });
 
       rideObj.save((err, ride) => {
-        if (err) return res.status(500).end();
+        if (err) {
+          console.log(err);
+          return res.status(500).end();
+        }
         res.status(200).json(ride);
 
         // return res.status(500).end();
@@ -309,13 +314,13 @@ exports.cancelTrip = (req, res) => {
                     departureTime: new Date(trip.dateTime), // for the time N milliseconds from now.
                   },
                   optimize: true,
-                  key: process.env.MAPS_API_KEY,
+                  key: process.env.MAPS_KEY,
                 },
                 timeout: 2000, // milliseconds
               })
               .then((r) => {
                 const routeArray = polylineUtil.decode(
-                  r.data.routes[0].overview_polyline.points
+                  r.data.routes[0].overview_polyline.points 
                 );
                 trip.route = Object.values(routeArray).map((item) => ({
                   lat: item[0],
@@ -349,7 +354,7 @@ exports.cancelTrip = (req, res) => {
 };
 
 exports.tripHistory = (req, res) => {
-  User.findById(req.auth._id, (err, user) => {
+  User.findById(req.auth._id, (err, user) => { 
     // if (err)
     //     return res.status(500).end();
     // else {
@@ -463,7 +468,7 @@ const sendMail = async (options) => {
     service: "Gmail",
     auth: {
       user: "yug20020706@gmail.com",
-      pass: "",
+      pass: process.env.NODE_MAILER_PASS,
     },
   });
 

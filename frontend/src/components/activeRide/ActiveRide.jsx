@@ -40,7 +40,7 @@ const ActiveRide = () => {
 
   const { rideInfo: rideInfo1 } = rideInfo;
   // console.log(rideInfo.rideInfo2);
-  // console.log("rideId"+rideInfo.rideId)
+  // console.log("rideId"+rideInfo.cost)
 
   const getDateandTime = (dtString) => {
     const d = new Date(dtString);
@@ -107,8 +107,7 @@ const ActiveRide = () => {
   }, [rideInfo.rideId]);
 
   // payment methods
-  const KEY =
-    "pk_test_51Mj5ZDSAj0EIjVubJGOehQ8kTZes4xSWiUFqZcWmBf3yFoOn7flyyqZJFt3WxqEKIF07jA7EvSGWh6zlCnteBGWY00EfjfQ4SS";
+  const KEY = process.env.REACT_APP_STRIPE_KEY;
   const [stripeToken, setStripeToken] = useState(null);
   const [amountPaid, setPaid] = useState(false);
 
@@ -159,7 +158,7 @@ const ActiveRide = () => {
               </Row>
               <div className="payment">
                 <div className="paymentDetails">
-                  <h4>Amount To be Paid: {rideInfo.rideInfo2}</h4>
+                  <h4>Amount To be Paid: ${rideInfo.cost}</h4>
                 </div>
                 {amountPaid ? (
                   "Amount Paid"
@@ -169,8 +168,8 @@ const ActiveRide = () => {
                     image="https://api.freelogodesign.org/assets/thumb/logo/6294672_400.png?t=637945524870000000"
                     billingAddress
                     shippingAddress
-                    description={`Your Total Amout is INR ${rideInfo.rideInfo2}`}
-                    amount={rideInfo.rideInfo2}
+                    description={`Your Total Amout is INR ${rideInfo.cost}`}
+                    amount={rideInfo.cost}
                     token={onToken}
                     stripeKey={KEY}
                   >

@@ -33,7 +33,7 @@ function App() {
   const { token, name, setToken } = useToken(setActiveTrip);
 
   const { isLoaded, loadError } = useLoadScript({
-    googleMapsApiKey: "",
+    googleMapsApiKey: process.env.REACT_APP_MAPS_API_KEY ,
     libraries,
   });
 
