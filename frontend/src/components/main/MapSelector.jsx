@@ -12,8 +12,8 @@ const options = {
     zoomControl: true,
 };
 const center = {
-    lat: 40.730610,
-    lng: -73.935242,
+    lat: 40.706001,
+    lng: -73.997002,
   };
 
 const autocompleteTextBoxStyle = {

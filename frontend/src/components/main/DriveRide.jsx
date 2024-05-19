@@ -333,7 +333,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import Cookies from "js-cookie";
 import Geocode, { fromLatLng, setKey } from "react-geocode";
 
-
+setKey("AIzaSyBHTIk1UfmtCLrZvuMJoOU8XVqx8OUwUhs");
 
 const mapContainerStyle = {
   height: "60vh",
@@ -345,8 +345,8 @@ const options = {
 };
 
 const center = {
-  lat: 40.730610,
-  lng: -73.935242,
+  lat: 40.706001,
+  lng: -73.997002,
 };
 
 export default function DriveRide({ type, setToken, setActiveTrip }) {

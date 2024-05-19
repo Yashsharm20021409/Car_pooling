@@ -15,7 +15,7 @@ import Footer from "../footer/Footer";
 import StripeCheckout from "react-stripe-checkout";
 import axios from "axios";
 
-
+setKey("AIzaSyBHTIk1UfmtCLrZvuMJoOU8XVqx8OUwUhs");
 
 const mapContainerStyle = {
   height: "35vh",
@@ -26,8 +26,8 @@ const options = {
   zoomControl: true,
 };
 const center = {
-  lat: 43.473078230478336,
-  lng: -80.54225947407059,
+  lat: 40.706001,
+  lng: -73.997002,
 };
 
 const ActiveRide = () => {

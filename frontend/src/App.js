@@ -28,7 +28,7 @@ function App() {
   const { token, name, setToken } = useToken(setActiveTrip);
 
   const { isLoaded, loadError } = useLoadScript({
-    
+    googleMapsApiKey: "AIzaSyBHTIk1UfmtCLrZvuMJoOU8XVqx8OUwUhs",
     libraries
   });
 

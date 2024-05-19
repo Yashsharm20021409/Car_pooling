@@ -277,7 +277,7 @@ import Geocode, { fromLatLng, setKey } from "react-geocode";
 
 import "./ActiveTrip.css";
 
-
+setKey("AIzaSyBHTIk1UfmtCLrZvuMJoOU8XVqx8OUwUhs");
 // Map options
 const mapContainerStyle = {
   height: "35vh",
@@ -289,9 +289,9 @@ const options = {
 };
 
 const center = {
-    lat: 40.730610,
-    lng: -73.935242,
-  };
+  lat: 40.706001,
+  lng: -73.997002,
+};
 export default function ActiveTrip({ setActiveTrip }) {
   // For Map
   const [mapCoords, setMapCoords] = useState({});
@@ -508,7 +508,8 @@ export default function ActiveTrip({ setActiveTrip }) {
           <DirectionsRenderer
             options={{
               directions: routeResp,
-            }}
+            }
+          }
           />
         )}
       </GoogleMap>

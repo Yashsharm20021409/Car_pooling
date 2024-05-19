@@ -17,7 +17,7 @@ import jsonp from "jsonp";
 // EIAFslZHK1SimZjdRIi8AWlncAXM4zTlKq0eTQaT6AE key
 // ildEoz8F8i8KT8CyWWD1 ID
 
-
+setKey("AIzaSyBHTIk1UfmtCLrZvuMJoOU8XVqx8OUwUhs");
 export default function GetRide() {
   const divRef = useRef(null);
   const [dataObject1, setDataObject] = useState({});
@@ -196,7 +196,7 @@ export default function GetRide() {
       </div>
     </div>
   );
-
+  
   return (
     <>
       <div className="search-container">

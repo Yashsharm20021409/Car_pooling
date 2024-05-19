@@ -274,6 +274,7 @@ exports.cancelTrip = (req, res) => {
         // if (err)
         //     return res.status(500).end();
         if (trip) {
+          // if trip role is driver execute this set all riders ride true
           if (user.trip_role_driver) {
             trip.riders.forEach((rider) => {
               //3
@@ -298,7 +299,7 @@ exports.cancelTrip = (req, res) => {
               //     return res.status(500).end();
               // }
             });
-          } else {
+          } else { // when user cancel ride 
             const riderIndex = trip.riders.indexOf(user._id);
             trip.waypoints.splice(riderIndex * 2, 2);
             mapsClient
