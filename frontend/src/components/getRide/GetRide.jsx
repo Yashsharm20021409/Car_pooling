@@ -16,8 +16,13 @@ import jsonp from "jsonp";
 
 // EIAFslZHK1SimZjdRIi8AWlncAXM4zTlKq0eTQaT6AE key
 // ildEoz8F8i8KT8CyWWD1 ID
+<<<<<<< HEAD
 
 setKey("AIzaSyBHTIk1UfmtCLrZvuMJoOU8XVqx8OUwUhs");
+=======
+setKey("AIzaSyBHTIk1UfmtCLrZvuMJoOU8XVqx8OUwUhs");
+
+>>>>>>> 1afc4bcdbc7064093c772de24894dbf4f75ce272
 export default function GetRide() {
   const divRef = useRef(null);
   const [dataObject1, setDataObject] = useState({});
@@ -28,8 +33,45 @@ export default function GetRide() {
   const [tripDetails, setTripDetails] = useState([]);
   const [source, setsrcName] = useState("");
   const [destination, setdestName] = useState("");
+  const [price, setPrice] = useState(0);
 
   // Your existing code
+  const predictFare = async (formdata) => {
+    try {
+      const response = await fetch("http://127.0.0.1:5000/predict_fare", {
+        method: "POST",
+        body: JSON.stringify(formdata),
+        mode: "cors",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const data = await response.json();
+      return Math.round(data.fare_amount);
+    } catch (error) {
+      console.error("Error:", error);
+      throw error;
+    }
+  };
+
+  // const predictFare = async (formdata) => {
+  //   console.log(formdata);
+  //   await fetch("http://127.0.0.1:5000/predict_fare", {
+  //     method: "POST",
+  //     body: JSON.stringify(formdata),
+  //     mode: "cors",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //     },
+  //   })
+  //     .then((response) => response.json())
+  //     .then((data) => {
+  //       // setPrice(Math.round(data.fare_amount));
+  //       return Math.round(data.fare_amount);
+  //       // console.log("data" + data.fare_amount);
+  //     })
+  //     .catch((error) => console.error("Error:", error));
+  // };
 
   useEffect(() => {
     // Filter trip details based on search term
@@ -37,6 +79,7 @@ export default function GetRide() {
       trip.source.toLowerCase().includes(searchTerm.toLowerCase())
     );
     setFilteredTripDetails(filtered);
+    console.log("ff", filtered);
   }, [searchTerm, tripDetails]);
 
   const getLocFromCoords = async (coords) => {
@@ -45,7 +88,7 @@ export default function GetRide() {
 
     const res = await fromLatLng(lat, long);
     const location = await res.results[0].formatted_address;
-    return location.slice(0,40) + "....";
+    return location.slice(0, 40) + "....";
   };
 
   const getDateandTime = (dtString) => {
@@ -73,7 +116,7 @@ export default function GetRide() {
       let thisTrip = data[i];
       let newTrip = {};
       let loc;
-  
+
       loc = await getLocFromCoords(thisTrip["source"]);
       newTrip["source"] = loc;
       loc = await getLocFromCoords(thisTrip["destination"]);
@@ -82,6 +125,52 @@ export default function GetRide() {
       newTrip["riderCount"] = thisTrip["riders"].length;
       newTrip["completed"] = thisTrip["completed"];
       newTrip["rideId"] = thisTrip["_id"];
+
+      const dateData = newTrip["tripDate"];
+
+      const date = new Date(dateData);
+
+      // Extract day, month, and year
+      const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thur", "Fri", "Sat"];
+      const monthNumberMap = {
+        January: 1,
+        February: 2,
+        March: 3,
+        April: 4,
+        May: 5,
+        June: 6,
+        July: 7,
+        August: 8,
+        September: 9,
+        October: 10,
+        November: 11,
+        December: 12,
+      };
+
+      const weekdayIndex = date.getDay();
+      const day = date.getDate();
+      const month = date.toLocaleString("default", { month: "long" });
+      const monthNumber = monthNumberMap[month];
+      const year = date.getFullYear();
+      const hour = date.getHours();
+
+      const formData = {
+        pickup_latitude: thisTrip["source"].lat,
+        pickup_longitude: thisTrip["source"].lng,
+        dropoff_latitude: thisTrip["destination"].lat, // Corrected: use lat instead of lng
+        dropoff_longitude: thisTrip["destination"].lng,
+        passenger_count: newTrip["riderCount"],
+        pickup_day: day,
+        pickup_hour: hour,
+        pickup_day_of_week: weekdayIndex,
+        pickup_month: monthNumber,
+        pickup_year: year,
+      };
+
+      // console.log(formData.passenger_count);
+      const price = await predictFare(formData);
+      newTrip["Price"] = price;
+      // console.log("pp", newTrip["Price"]);
       tempArray.push(newTrip);
     }
 
@@ -90,6 +179,7 @@ export default function GetRide() {
 
   useEffect(() => {
     fetchData();
+    // console.log("trip: ", tripDetails.data);
   }, []);
 
   const bookRide = async () => {
@@ -99,6 +189,7 @@ export default function GetRide() {
         divRef.current.querySelector(".destination-info");
       const dateElement = divRef.current.querySelector(".date-info");
       const rideElement = divRef.current.querySelector(".ride-info");
+      const rideElement2 = divRef.current.querySelector(".ride-info2");
 
       const sourceInfo = sourceElement ? sourceElement.textContent : "N/A";
       const destinationInfo = destinationElement
@@ -106,6 +197,7 @@ export default function GetRide() {
         : "N/A";
       const dateInfo = dateElement ? dateElement.textContent : "N/A";
       const rideInfo1 = rideElement ? rideElement.textContent : "N/A";
+      const rideInfo2 = rideElement2 ? rideElement2.textContent : "0";
 
       const rideInfo = {
         source: sourceInfo,
@@ -132,9 +224,10 @@ export default function GetRide() {
         .then((responseJson) => {
           const rideId = responseJson._id;
           // console.log(rideId)
-          setRideDetails({ rideId });
+          setRideDetails({ rideId, rideInfo2 });
           // console.log();
           navigate("/active-ride");
+          // history.push("/active-ride");
         })
         .catch((error) => {
           console.log(error);
@@ -149,6 +242,7 @@ export default function GetRide() {
     destination = "Default Text",
     tripDate = "defaultDate",
     rideID,
+    cost,
   }) => (
     <div>
       <div className="card-body mb-4 mt-4 mx-4 text-black" ref={divRef}>
@@ -187,6 +281,14 @@ export default function GetRide() {
         </div>
 
         <div className="detail-container">
+          <div className="detail-row">
+            <img className="tripImage" src={groupImg}></img>
+            <h6 className="detail-heading">Price </h6>
+            <h6 className="detail-heading ride-info2">$ {cost}</h6>
+          </div>
+        </div>
+
+        <div className="detail-container">
           <div className="detail-row book-ride-row">
             <button className="book-ride" onClick={bookRide}>
               Book Ride
@@ -220,7 +322,14 @@ export default function GetRide() {
         </h1>
       ) : (
         filteredTripDetails?.map((data, index) => {
-          return <CardView key={index} {...data} rideID={data.rideId} />;
+          return (
+            <CardView
+              key={index}
+              {...data}
+              rideID={data.rideId}
+              cost={filteredTripDetails[index].Price}
+            />
+          );
         })
         // ""
       )}
