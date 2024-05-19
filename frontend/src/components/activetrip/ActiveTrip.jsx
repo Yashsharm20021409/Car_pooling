@@ -277,7 +277,7 @@ import Geocode, { fromLatLng, setKey } from "react-geocode";
 
 import "./ActiveTrip.css";
 
-setKey("AIzaSyBHTIk1UfmtCLrZvuMJoOU8XVqx8OUwUhs");
+
 // Map options
 const mapContainerStyle = {
   height: "35vh",
