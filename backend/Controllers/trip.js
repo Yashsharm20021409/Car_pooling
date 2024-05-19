@@ -1,13 +1,13 @@
 const Trip = require("../Models/tripModel");
 const User = require("../Models/user");
-const Ride = require("../Models/rides")
+const Ride = require("../Models/rides");
 const dotenv = require("dotenv");
 const { Client } = require("@googlemaps/google-maps-services-js");
 var polylineUtil = require("@mapbox/polyline");
 const mapsClient = new Client({});
 const { PolyUtil } = require("node-geometry-library");
 dotenv.config();
-const nodeMailer = require('nodemailer')
+const nodeMailer = require("nodemailer");
 
 // const MS_PER_MINUTE = 60000;
 const offsetDurationInMinutes = 15;
@@ -57,15 +57,15 @@ exports.activeTrip = (req, res) => {
 
 exports.allRide = async (req, res) => {
   try {
-    const filter = { completed: false }
-    const allRide = (await Trip.find(filter).sort({ createdAt: -1 }));
+    const filter = { completed: false };
+    const allRide = await Trip.find(filter).sort({ createdAt: -1 });
 
     res.status(201).json({
       success: true,
       allRide,
     });
   } catch (error) {
-    res.status(500).json(error)
+    res.status(500).json(error);
   }
 };
 
@@ -82,7 +82,7 @@ exports.getRide = async (req, res) => {
       ride,
     });
   } catch (error) {
-    res.status(500).json(error)
+    res.status(500).json(error);
   }
 };
 
@@ -180,19 +180,20 @@ exports.ride = (req, res) => {
             return res.status(400).end();
           }
           trip.waypoints = [...trip.waypoints, req.body.src, req.body.dst];
-          mapsClient.directions({
-            params: {
-              origin: trip.source,
-              destination: trip.destination,
-              waypoints: trip.waypoints,
-              drivingOptions: {
-                departureTime: new Date(trip.dateTime), // for the time N milliseconds from now.
+          mapsClient
+            .directions({
+              params: {
+                origin: trip.source,
+                destination: trip.destination,
+                waypoints: trip.waypoints,
+                drivingOptions: {
+                  departureTime: new Date(trip.dateTime), // for the time N milliseconds from now.
+                },
+                optimize: true,
+                key: "AIzaSyBHTIk1UfmtCLrZvuMJoOU8XVqx8OUwUhs",
               },
-              optimize: true,
-              key: "AIzaSyBHTIk1UfmtCLrZvuMJoOU8XVqx8OUwUhs",
-            },
-            timeout: 2000, // milliseconds
-          })
+              timeout: 2000, // milliseconds
+            })
             .then((r) => {
               const routeArray = polylineUtil.decode(
                 r.data.routes[0].overview_polyline.points
@@ -204,12 +205,10 @@ exports.ride = (req, res) => {
               trip.riders.push(user._id);
               trip.available_riders = !(trip.riders.length === trip.max_riders);
               trip.save((err, trip) => {
-
                 res.status(200).json(trip);
                 user.active_trip = trip._id;
                 user.trip_role_driver = false;
                 user.save((err) => {
-
                   return res;
                 });
                 return res.status(500).end();
@@ -227,7 +226,7 @@ exports.ride = (req, res) => {
 exports.bookRide = (req, res) => {
   User.findById(req.auth._id, async (err, user) => {
     if (user.activeTrip == undefined || user.activeTrip == null) {
-      // 
+      //
       // let startDateTime = new Date(req.body.dateTime);
       // startDateTime.setMinutes(startDateTime.getMinutes() - offsetDurationInMinutes);
       // let endDateTime = new Date(req.body.dateTime);
@@ -248,18 +247,16 @@ exports.bookRide = (req, res) => {
       });
 
       rideObj.save((err, ride) => {
-        if (err)
-          return res.status(500).end();
+        if (err) return res.status(500).end();
         res.status(200).json(ride);
 
         // return res.status(500).end();
       });
-    }
-    else {
+    } else {
       res.statusMessage = "A ride is already active";
       return res.status(400).end();
     }
-  })
+  });
 };
 
 exports.cancelTrip = (req, res) => {
@@ -435,34 +432,34 @@ exports.isDriver = (req, res) => {
 };
 
 exports.paymentDone = async (req, res) => {
-  console.log("pagee")
+  console.log("pagee");
   try {
-
     // Find the ride document by rideId
     const ride = await Ride.findById(req.params.id);
 
     if (!ride) {
-      return res.status(404).json({ error: 'Ride not found' });
+      return res.status(404).json({ error: "Ride not found" });
     }
 
     // Update payment status to true
     ride.payment = true;
     await ride.save();
 
-    res.status(200).json({ message: 'Payment updated successfully' });
+    res.status(200).json({ message: "Payment updated successfully" });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'An error occurred while updating payment status' });
+    res
+      .status(500)
+      .json({ error: "An error occurred while updating payment status" });
   }
-}
-
+};
 
 // Function to send email notification
 const sendMail = async (options) => {
   const transporter = nodeMailer.createTransport({
     host: "smtp.gmail.com",
     port: "465",
-    service: 'Gmail',
+    service: "Gmail",
     auth: {
       user: "yug20020706@gmail.com",
       pass: "uiwathyjzuwhyamn",
@@ -473,8 +470,8 @@ const sendMail = async (options) => {
     from: "yug20020706@gmail.com",
     to: options.email,
     subject: options.subject,
-    text: options.message
-  }
+    text: options.message,
+  };
 
   await transporter.sendMail(mailToUser);
 };

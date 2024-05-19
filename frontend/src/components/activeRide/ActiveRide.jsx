@@ -15,8 +15,6 @@ import Footer from "../footer/Footer";
 import StripeCheckout from "react-stripe-checkout";
 import axios from "axios";
 
-
-
 const mapContainerStyle = {
   height: "35vh",
   width: "100%",
@@ -39,6 +37,7 @@ const ActiveRide = () => {
   const { rideInfo } = useRideContext();
 
   const { rideInfo: rideInfo1 } = rideInfo;
+  // console.log(rideInfo.rideInfo2);
   // console.log("rideId"+rideInfo.rideId)
 
   const getDateandTime = (dtString) => {
@@ -55,7 +54,7 @@ const ActiveRide = () => {
   const [orderId, setOrderId] = useState("");
 
   useEffect(() => {
-    const fetchTrip = async() => {
+    const fetchTrip = async () => {
       try {
         const data = await axios.get(
           `http://localhost:8000/api/trip/${rideInfo.rideId}`
@@ -66,9 +65,9 @@ const ActiveRide = () => {
         setdestination(data.data.ride.destination);
         setdatetime(getDateandTime(data.data.ride.dateTime));
         setPaid(data.data.ride.payment);
-        setOrderId(data.data.ride._id)
+        setOrderId(data.data.ride._id);
       } catch (error) {
-        console.log(error);     
+        console.log(error);
       }
     };
     fetchTrip();
@@ -110,8 +109,6 @@ const ActiveRide = () => {
     "pk_test_51Mj5ZDSAj0EIjVubJGOehQ8kTZes4xSWiUFqZcWmBf3yFoOn7flyyqZJFt3WxqEKIF07jA7EvSGWh6zlCnteBGWY00EfjfQ4SS";
   const [stripeToken, setStripeToken] = useState(null);
   const [amountPaid, setPaid] = useState(false);
-
-
 
   const onToken = async (token) => {
     setStripeToken(token);
@@ -160,7 +157,7 @@ const ActiveRide = () => {
               </Row>
               <div className="payment">
                 <div className="paymentDetails">
-                  <h4>Amount To be Paid: $200</h4>
+                  <h4>Amount To be Paid: {rideInfo.rideInfo2}</h4>
                 </div>
                 {amountPaid ? (
                   "Amount Paid"
@@ -170,8 +167,8 @@ const ActiveRide = () => {
                     image="https://api.freelogodesign.org/assets/thumb/logo/6294672_400.png?t=637945524870000000"
                     billingAddress
                     shippingAddress
-                    description={`Your Total Amout is INR 200`}
-                    amount="200"
+                    description={`Your Total Amout is INR ${rideInfo.rideInfo2}`}
+                    amount={rideInfo.rideInfo2}
                     token={onToken}
                     stripeKey={KEY}
                   >
