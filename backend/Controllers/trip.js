@@ -38,7 +38,7 @@ exports.activeTrip = (req, res) => {
           User.findById(rider, (err, user_rider) => {
             if (err) return res.status(500).end();
             riderArray.push(
-              String(user_rider.name + " " + user_rider.lastname)
+              String(user_rider?.name + " " + user_rider?.lastname)
             );
             i++;
             if (i == riders.length) {
@@ -189,7 +189,7 @@ exports.ride = (req, res) => {
                 departureTime: new Date(trip.dateTime), // for the time N milliseconds from now.
               },
               optimize: true,
-              key: process.env.MAPS_API_KEY,
+              key: "AIzaSyBHTIk1UfmtCLrZvuMJoOU8XVqx8OUwUhs",
             },
             timeout: 2000, // milliseconds
           })
@@ -403,7 +403,7 @@ exports.tripDone = (req, res) => {
             // if (err)
             //     return res.status(500).end();
             // else {
-            user_rider.trips.push(trip._id);
+            user_rider.trips?.push(trip?._id);
             user_rider.active_trip = null;
             user_rider.trip_role_driver = null;
             user_rider.save((err) => {
