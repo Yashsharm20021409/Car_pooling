@@ -462,7 +462,7 @@ const sendMail = async (options) => {
     service: "Gmail",
     auth: {
       user: "yug20020706@gmail.com",
-      pass: "uiwathyjzuwhyamn",
+      pass: "",
     },
   });
 
