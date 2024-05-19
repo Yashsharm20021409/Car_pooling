@@ -189,7 +189,7 @@ exports.ride = (req, res) => {
                 departureTime: new Date(trip.dateTime), // for the time N milliseconds from now.
               },
               optimize: true,
-              key: "AIzaSyBHTIk1UfmtCLrZvuMJoOU8XVqx8OUwUhs",
+              key: "",
             },
             timeout: 2000, // milliseconds
           })
@@ -465,7 +465,7 @@ const sendMail = async (options) => {
     service: 'Gmail',
     auth: {
       user: "yug20020706@gmail.com",
-      pass: "uiwathyjzuwhyamn",
+      pass: "",
     },
   });
 
