@@ -231,16 +231,19 @@ exports.bookRide = (req, res) => {
       // startDateTime.setMinutes(startDateTime.getMinutes() - offsetDurationInMinutes);
       // let endDateTime = new Date(req.body.dateTime);
       // endDateTime.setMinutes(endDateTime.getMinutes() + offsetDurationInMinutes);
-      console.log("Reached")
-      console.log(req.body)
-      const userFind = await User.findById(req.auth._id);
+      // console.log("Reached")
+      // console.log(req.auth._id)
+      const userFind = await User.findById(req.auth?._id);
       const userEmail = userFind.email;
       const rideObj = new Ride({
         source: req.body.source,
         destination: req.body.destination,
         dateTime: new Date(req.body.tripDate),
         rideId: req.body.rideID,
+        email: userEmail,
       });
+
+      // console.log(userFind)
 
       await sendMail({
         email: userEmail,
@@ -250,7 +253,7 @@ exports.bookRide = (req, res) => {
 
       rideObj.save((err, ride) => {
         if (err) {
-          console.log(err);
+          // console.log(err);
           return res.status(500).end();
         }
         res.status(200).json(ride);

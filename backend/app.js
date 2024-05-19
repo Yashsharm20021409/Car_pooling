@@ -16,7 +16,7 @@ const swaggerDocument = YAML.load('./swagger.yaml');
 const authRoutes = require("./Routes/authentication");
 const allusersRoutes = require("./Routes/allusersRoutes");
 //const userRoutes = require("./Routes/user.js");
-const tripRoutes = require("./Routes/tripRoutes"); 
+const tripRoutes = require("./Routes/tripRoutes");
 
 // import cookieparser from "cookie-parser";
 // import cors from "cors";
@@ -33,12 +33,52 @@ const tripRoutes = require("./Routes/tripRoutes");
 
 
 // MongoDb connection
-var db=mongoose.connect(process.env.DATABASE_URI).then(console.log("DB connected"))
+var db = mongoose.connect(process.env.DATABASE_URI).then(console.log("DB connected"))
 //.catch(error => console.log(error));
+
+
+// notification
+app.use(express.json());
+const nodemailer = require('nodemailer');
+const transporter = nodemailer.createTransport({
+    // service: 'gmail',
+    // auth: {
+    //     user: 'your-email@gmail.com',
+    //     pass: 'your-email-password'
+    // }
+    host: "smtp.gmail.com",
+    port: "465",
+    service: "Gmail",
+    auth: {
+      user: "yug20020706@gmail.com",
+      pass: process.env.NODE_MAILER_PASS,
+    },
+});
+
+app.post('/send-notification', (req, res) => {
+    // console.log("Hello",req.body);
+    const { email, subject, text } = req.body;
+
+    const mailOptions = {
+        from: 'yug20020706@gmail.com',
+        to: email,
+        subject: subject,
+        text: text
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            return res.status(500).send(error.toString());
+        }
+        res.send('Email sent: ' + info.response);
+    });
+});
+
+
 
 //Middleware
 app.use(bodyparser.json())
-app.use(cookieparser()) 
+app.use(cookieparser())
 app.use(cors())
 
 //Routes
@@ -49,12 +89,11 @@ app.use("/api", tripRoutes);
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocument));
 
 app.listen(process.env.PORT || 8000, () => {
-    console.log(`Listening on a port`,process.env.PORT);
-}) 
+    console.log(`Listening on a port`, process.env.PORT);
+})
 
 
 
-    
+
 module.exports = app;
 // MongoDb connection
-   

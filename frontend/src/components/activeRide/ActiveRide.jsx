@@ -15,8 +15,6 @@ import Footer from "../footer/Footer";
 import StripeCheckout from "react-stripe-checkout";
 import axios from "axios";
 
-
-
 const mapContainerStyle = {
   height: "35vh",
   width: "100%",
@@ -54,6 +52,8 @@ const ActiveRide = () => {
   const [destination, setdestination] = useState("");
   const [datetime, setdatetime] = useState("");
   const [orderId, setOrderId] = useState("");
+  const [email, setEmail] = useState("");
+  const [tripDateTime, setTripDateTime] = useState(null);
 
   useEffect(() => {
     const fetchTrip = async () => {
@@ -62,12 +62,15 @@ const ActiveRide = () => {
           `http://localhost:8000/api/trip/${rideInfo.rideId}`
         );
 
-        // console.log(data.data.ride);
+        // console.log(data.data);
         setsource(data.data.ride.source);
         setdestination(data.data.ride.destination);
         setdatetime(getDateandTime(data.data.ride.dateTime));
         setPaid(data.data.ride.payment);
-        setOrderId(data.data.ride._id);
+        // setTripDateTime(data.data.ride.dateTime)
+        setOrderId(data.data.ride?._id);
+        setEmail(data.data.ride.email);
+        // console.log("Emial ",email)
       } catch (error) {
         console.log(error);
       }
@@ -107,7 +110,8 @@ const ActiveRide = () => {
   }, [rideInfo.rideId]);
 
   // payment methods
-  const KEY = process.env.REACT_APP_STRIPE_KEY;
+  const KEY =
+    "pk_test_51Mj5ZDSAj0EIjVubJGOehQ8kTZes4xSWiUFqZcWmBf3yFoOn7flyyqZJFt3WxqEKIF07jA7EvSGWh6zlCnteBGWY00EfjfQ4SS";
   const [stripeToken, setStripeToken] = useState(null);
   const [amountPaid, setPaid] = useState(false);
 
@@ -127,6 +131,72 @@ const ActiveRide = () => {
         error.response.data.error
       ); // Log error message
       // Handle error as needed
+    }
+  };
+
+  useEffect(() => {
+    if (tripDateTime) {
+      const now = new Date();
+      const timeDifference = tripDateTime.getTime() - now.getTime();
+
+      if (timeDifference > 3 * 60 * 60 * 1000) {
+        // If the trip is more than 24 hours away, set up a timeout to send the notification 24 hours before the trip
+        const notificationTimeout = setTimeout(() => {
+          sendNotification();
+        }, timeDifference - 3 * 60 * 60 * 1000); // Send notification 24 hours before the trip
+
+        // Clear the timeout when unmounting or when the trip is canceled
+        return () => clearTimeout(notificationTimeout);
+      } else if (timeDifference > 0) {
+        // If the trip is less than 24 hours away, set up an interval to send notifications every minute
+        const notificationInterval = setInterval(() => {
+          sendNotification();
+        }, 60 * 60 * 1000); // Send notification every minute
+
+        setTimeout(() => {
+          clearInterval(notificationInterval);
+        }, timeDifference);
+
+        // Clear the interval when unmounting or when the trip is canceled
+        return () => clearInterval(notificationInterval);
+      }
+    }
+  }, [tripDateTime]);
+
+  const parseDateString = (dateString) => {
+    const parts = dateString.split(" ");
+    const monthIndex = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ].indexOf(parts[1]);
+    const day = parseInt(parts[2]);
+    const year = parseInt(parts[3]);
+    const timeParts = parts[5].split(":");
+    const hours = parseInt(timeParts[0]);
+    const minutes = parseInt(timeParts[1]);
+    return new Date(year, monthIndex, day, hours, minutes);
+  };
+
+  const sendNotification = async () => {
+    try {
+      //     // const user = await axios.get("http://localhost:800")
+      await axios.post("http://localhost:8000/send-notification", {
+        email: email,
+        subject: "Trip Reminder",
+        text: `Your trip from ${source} to ${destination} is scheduled to start soon. Please be ready.`,
+      });
+    } catch (error) {
+      console.error("Error sending notification email:", error);
     }
   };
 

@@ -25,6 +25,12 @@ const rideSchema = new schema({
         type:Boolean,
         default:false,
     },
+    email: {
+        type: String,
+        trim: true,
+        required: true,
+        unique: true,
+    },
 }, { timestamps: true });
 
 module.exports = mongoose.model("rides", rideSchema)

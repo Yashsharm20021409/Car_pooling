@@ -204,7 +204,7 @@ export default function GetRide() {
         .then((responseJson) => {
           // const rideId = responseJson._id;
           // console.log("CC",rideInfo?.cost);
-          const rideId = responseJson._id
+          const rideId = responseJson?._id
           const cost = rideInfo?.cost;
           setRideDetails({ rideId, cost});
           // console.log();
