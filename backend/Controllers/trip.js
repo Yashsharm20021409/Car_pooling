@@ -57,7 +57,9 @@ exports.activeTrip = (req, res) => {
 
 exports.allRide = async (req, res) => {
   try {
-    const filter = { completed: false };
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const filter = { completed: false, max_riders: { $gt: 0 } ,dateTime: { $gt: today } };
     const allRide = await Trip.find(filter).sort({ createdAt: -1 });
 
     res.status(201).json({
@@ -251,6 +253,8 @@ exports.bookRide = (req, res) => {
         message: `Hello ${userFind.name}, Your Car ride has been Booked Please Track Your journey on our Website Thankyou.`,
       });
 
+      // trip.available_riders = !(trip.riders.length === trip.max_riders);
+
       rideObj.save((err, ride) => {
         if (err) {
           // console.log(err);
@@ -323,7 +327,7 @@ exports.cancelTrip = (req, res) => {
               })
               .then((r) => {
                 const routeArray = polylineUtil.decode(
-                  r.data.routes[0].overview_polyline.points 
+                  r.data.routes[0].overview_polyline.points
                 );
                 trip.route = Object.values(routeArray).map((item) => ({
                   lat: item[0],
@@ -357,7 +361,7 @@ exports.cancelTrip = (req, res) => {
 };
 
 exports.tripHistory = (req, res) => {
-  User.findById(req.auth._id, (err, user) => { 
+  User.findById(req.auth._id, (err, user) => {
     // if (err)
     //     return res.status(500).end();
     // else {

@@ -39,7 +39,7 @@ var db = mongoose.connect(process.env.DATABASE_URI).then(console.log("DB connect
 
 // notification
 app.use(express.json());
-const nodemailer = require('nodemailer');
+const nodemailer = require('nodemailer'); 
 const transporter = nodemailer.createTransport({
     // service: 'gmail',
     // auth: {

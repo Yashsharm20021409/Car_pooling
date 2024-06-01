@@ -276,8 +276,8 @@ import Cookies from "js-cookie";
 import Geocode, { fromLatLng, setKey } from "react-geocode";
 
 import "./ActiveTrip.css";
-
-
+import axios from "axios";
+import StripeCheckout from "react-stripe-checkout";
 
 // Map options
 const mapContainerStyle = {
@@ -431,12 +431,31 @@ export default function ActiveTrip({ setActiveTrip }) {
       });
   };
 
+  // const predictFare = async (formdata) => {
+  //   try {
+  //     const response = await fetch("http://127.0.0.1:5000/predict_fare", {
+  //       method: "POST",
+  //       body: JSON.stringify(formdata),
+  //       mode: "cors",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //     });
+  //     const data = await response.json();
+  //     return Math.round(data.fare_amount);
+  //   } catch (error) {
+  //     console.error("Error:", error);
+  //     throw error;
+  //   }
+  // };
+
   // Active Trip details
   const [source, setsource] = useState("");
   const [destination, setdestination] = useState("");
   const [datetime, setdatetime] = useState("");
   const [driver, setdriver] = useState("");
   const [riders, setriders] = useState("");
+  const [ridePrice, setRidePrice] = useState(0);
 
   useEffect(() => {
     fetch("http://localhost:8000/api/trip/activetrip", {
@@ -459,6 +478,53 @@ export default function ActiveTrip({ setActiveTrip }) {
         getLocFromCoords(responseJson.source, "src");
         getLocFromCoords(responseJson.destination, "dest");
         let all_riders = responseJson.riders;
+
+        const dateData = getDateandTime(responseJson.dateTime);
+
+        const date = new Date(dateData);
+
+        // Extract day, month, and year
+        const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thur", "Fri", "Sat"];
+        const monthNumberMap = {
+          January: 1,
+          February: 2,
+          March: 3,
+          April: 4,
+          May: 5,
+          June: 6,
+          July: 7,
+          August: 8,
+          September: 9,
+          October: 10,
+          November: 11,
+          December: 12,
+        };
+
+        const weekdayIndex = date.getDay();
+        const day = date.getDate();
+        const month = date.toLocaleString("default", { month: "long" });
+        const monthNumber = monthNumberMap[month];
+        const year = date.getFullYear();
+        const hour = date.getHours();
+
+        const formData = {
+          pickup_latitude: responseJson.source["lat"],
+          pickup_longitude: responseJson.source["lng"],
+          dropoff_latitude: responseJson.destination["lat"], // Corrected: use lat instead of lng
+          dropoff_longitude: responseJson.destination["lng"],
+          passenger_count: responseJson.riders.length,
+          pickup_day: day,
+          pickup_hour: hour,
+          pickup_day_of_week: weekdayIndex,
+          pickup_month: monthNumber,
+          pickup_year: year,
+        };
+
+        console.log("FormData ", formData);
+        // const price = await predictFare(formData);
+        const price = 12;
+        setRidePrice(price);
+
         var temp_riders = "";
         for (let i = 0; i < all_riders.length - 1; i++) {
           temp_riders += all_riders[i] + ", ";
@@ -479,6 +545,30 @@ export default function ActiveTrip({ setActiveTrip }) {
         alert(error);
       });
   }, []);
+
+  // payment methods
+  const KEY =
+    "pk_test_51Mj5ZDSAj0EIjVubJGOehQ8kTZes4xSWiUFqZcWmBf3yFoOn7flyyqZJFt3WxqEKIF07jA7EvSGWh6zlCnteBGWY00EfjfQ4SS";
+  const [stripeToken, setStripeToken] = useState(null);
+  const [amountPaid, setPaid] = useState(false);
+
+  const onToken = async (token) => {
+    setStripeToken(token);
+    // try {
+
+      // console.log(response.data.message); // Log success message
+      // Refresh the page after successful payment and update
+      // setRideDetails({});
+      setActiveTrip(null)
+      window.location.reload();
+    // } catch (error) {
+    //   console.error(
+    //     "Error updating payment status:",
+    //     error.response.data.error
+    //   ); // Log error message
+      // Handle error as needed
+    }
+  // };
 
   return (
     <>
@@ -509,8 +599,7 @@ export default function ActiveTrip({ setActiveTrip }) {
           <DirectionsRenderer
             options={{
               directions: routeResp,
-            }
-          }
+            }}
           />
         )}
       </GoogleMap>
@@ -518,7 +607,7 @@ export default function ActiveTrip({ setActiveTrip }) {
         <Row style={{ marginTop: "1rem" }}>
           <Col md="10">
             <h1>Active Trip Details</h1>
-            <Row>
+            <Row style={{ marginBottom: "10px" }}>
               <h3 style={{ marginTop: "1rem" }}>
                 <span className="trip-attributes">Source</span>: {source}
               </h3>
@@ -535,7 +624,33 @@ export default function ActiveTrip({ setActiveTrip }) {
               <h3>
                 <span className="trip-attributes">Rider(s)</span>: {riders}
               </h3>
+              {/* <h3>
+                <span className="trip-attributes">Price(s)</span>: {ridePrice}
+              </h3> */}
             </Row>
+            {!isDriver && (
+              <div className="payment">
+                <div className="paymentDetails">
+                  <h4>Amount To be Paid: ${ridePrice}</h4>
+                </div>
+                {false ? (
+                  "Amount Paid"
+                ) : (
+                  <StripeCheckout
+                    name="Car Pooling"
+                    image="https://api.freelogodesign.org/assets/thumb/logo/6294672_400.png?t=637945524870000000"
+                    billingAddress
+                    shippingAddress
+                    description={`Your Total Amout is $ ${ridePrice}`}
+                    amount={ridePrice * 100}
+                    token={onToken}
+                    stripeKey={KEY}
+                  >
+                    <Button>CheckOut</Button>
+                  </StripeCheckout>
+                )}
+              </div>
+            )}
           </Col>
           <Col md="2">
             <Row>

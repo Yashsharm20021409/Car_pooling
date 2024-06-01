@@ -37,4 +37,4 @@ const useRideContext = () => {
   return context;
 };
 
-export { RideProvider, useRideContext };
+export { RideProvider, useRideContext }; 

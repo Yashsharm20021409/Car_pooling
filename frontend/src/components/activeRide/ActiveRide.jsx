@@ -4,7 +4,7 @@ import { Button, Col, Container, Row } from "react-bootstrap";
 import {
   GoogleMap,
   DirectionsRenderer,
-  DirectionsService,
+  DirectionsService, 
   Marker,
 } from "@react-google-maps/api";
 // import Cookies from 'js-cookie';
@@ -34,7 +34,7 @@ const ActiveRide = () => {
     mapRef.current = map;
   };
 
-  const { rideInfo } = useRideContext();
+  const { rideInfo ,setRideDetails } = useRideContext();
 
   const { rideInfo: rideInfo1 } = rideInfo;
   // console.log(rideInfo.rideInfo2);
@@ -124,6 +124,7 @@ const ActiveRide = () => {
       );
       console.log(response.data.message); // Log success message
       // Refresh the page after successful payment and update
+      setRideDetails({});
       window.location.reload();
     } catch (error) {
       console.error(
@@ -238,8 +239,8 @@ const ActiveRide = () => {
                     image="https://api.freelogodesign.org/assets/thumb/logo/6294672_400.png?t=637945524870000000"
                     billingAddress
                     shippingAddress
-                    description={`Your Total Amout is INR ${rideInfo.cost}`}
-                    amount={rideInfo.cost}
+                    description={`Your Total Amout is $ ${rideInfo.cost }`}
+                    amount={rideInfo.cost* 100}
                     token={onToken}
                     stripeKey={KEY}
                   >

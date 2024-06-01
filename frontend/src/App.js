@@ -22,6 +22,7 @@ import GetRide from "./components/getRide/GetRide";
 import { useLoadScript } from "@react-google-maps/api";
 import UseActiveTrip from "./libraries/UseActiveTrip";
 import ActiveRide from "./components/activeRide/ActiveRide";
+import { useRideContext } from './RideContext';
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 
@@ -29,11 +30,13 @@ const libraries = ["places"];
 
 function App() {
   const { activeTrip, setActiveTrip } = UseActiveTrip();
-  const activeRide = false;
+  const { rideInfo, setRideDetails } = useRideContext()
+  console.log(Object.keys(rideInfo).length === 0,"RF");
+  // const activeRide = false;
   const { token, name, setToken } = useToken(setActiveTrip);
 
   const { isLoaded, loadError } = useLoadScript({
-    googleMapsApiKey: process.env.REACT_APP_MAPS_API_KEY ,
+    googleMapsApiKey: process.env.REACT_APP_MAPS_API_KEY,
     libraries,
   });
 
@@ -112,7 +115,7 @@ function App() {
           exact
           path="/get-ride"
           element={
-            activeRide ? (
+            Object.keys(rideInfo).length !== 0 ? (
               <Navigate to="/active-ride" />
             ) : token ? (
               <GetRide
@@ -144,11 +147,11 @@ function App() {
           exact
           path="/active-ride"
           element={
-            token ? (
-              <ActiveRide setActiveTrip={setActiveTrip} />
+            token ? (rideInfo ? (
+              <ActiveRide />
             ) : (
-              <Navigate to="/" />
-            )
+              <Navigate to="/trip-history" />
+            )) : (<Navigate to="/login" />)
           }
         />
         <Route

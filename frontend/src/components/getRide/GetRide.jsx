@@ -73,7 +73,7 @@ export default function GetRide() {
     return date + " @ " + time[0] + ":" + time[1];
   };
 
-  const fetchData = async () => {
+  const fetchData = async () => { 
     const response = await fetch("http://localhost:8000/api/trip/allRide", {
       method: "GET",
       headers: {
@@ -82,6 +82,8 @@ export default function GetRide() {
       },
     });
     const rides = await response.json();
+
+    // console.log("GEtRide ",rides);
 
     const data = rides?.allRide;
     let tempArray = [];
@@ -97,6 +99,8 @@ export default function GetRide() {
       newTrip["destination"] = loc;
       newTrip["tripDate"] = getDateandTime(thisTrip["dateTime"]);
       newTrip["riderCount"] = thisTrip["riders"].length;
+      // console.log(thisTrip['max_riders']);
+      newTrip["avilable_seat"] = thisTrip['max_riders'];
       newTrip["completed"] = thisTrip["completed"];
       newTrip["rideId"] = thisTrip["_id"];
 
@@ -126,7 +130,7 @@ export default function GetRide() {
       const month = date.toLocaleString("default", { month: "long" });
       const monthNumber = monthNumberMap[month];
       const year = date.getFullYear();
-      const hour = date.getHours();
+      const hour = date.getHours(); 
 
       const formData = {
         pickup_latitude: thisTrip["source"].lat,
@@ -228,6 +232,8 @@ export default function GetRide() {
     bookRide(data);
   };
 
+  // console.log("Filter",filteredTripDetails)
+
   const CardView = ({
     source = "Default Title",
     destination = "Default Text",
@@ -236,6 +242,7 @@ export default function GetRide() {
     cost,
     onCardClick,
     onButtonClick,
+    avilable_seat,
   }) => (
     <div>
       <div className="card-body mb-4 mt-4 mx-4 text-black" onClick={onCardClick}>
@@ -273,6 +280,14 @@ export default function GetRide() {
           </div>
         </div>
 
+        {/* <div className="detail-container">
+          <div className="detail-row">
+            <img className="tripImage" src={groupImg}></img>
+            <h6 className="detail-heading">Available Seat: </h6>
+            <h6 className="detail-heading ride-info">{avilable_seat}</h6>
+          </div>
+        </div> */}
+
         <div className="detail-container">
           <div className="detail-row">
             <img className="tripImage" src={groupImg}></img>
@@ -301,8 +316,34 @@ export default function GetRide() {
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
-      </div>
-      {filteredTripDetails?.length === 0 ? (
+        </div>
+        {tripDetails?.length === 0 ? (
+        <h1
+          style={{
+            width: "100%",
+            height: "100%",
+            textAlign: "center",
+            marginTop: "30vh",
+          }}
+        >
+          No rides available
+        </h1>
+      ) : ( 
+        // (""):("")
+        filteredTripDetails?.map((data, index) => (
+          <CardView
+            key={index}
+            {...data}
+            rideID={data.rideId}
+            cost={filteredTripDetails[index].Price}
+            onCardClick={() => handleCardClick(data)}
+            onButtonClick={handleButtonClick}
+            avilable_seat={data.avilable_seat}
+          />
+        ))
+      )}
+      
+      {/* {filteredTripDetails?.length === 0 ? (
         <h1
           style={{
             width: "100%",
@@ -312,8 +353,8 @@ export default function GetRide() {
           }}
         >
           No rides available for the entered location
-        </h1>
-      ) : (
+        </h1> */}
+      {/* ) : (
         filteredTripDetails?.map((data, index) => {
           return (
             <CardView
@@ -326,8 +367,8 @@ export default function GetRide() {
             />
           );
         })
-        // ""
-      )}
+    
+      )} */}
     </>
   );
 }
