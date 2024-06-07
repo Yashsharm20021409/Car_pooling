@@ -59,7 +59,7 @@ exports.allRide = async (req, res) => {
   try {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    const filter = { completed: false, max_riders: { $gt: 0 } ,dateTime: { $gt: today } };
+    const filter = { completed: false, max_riders: { $gt: 0 }, dateTime: { $gt: today } };
     const allRide = await Trip.find(filter).sort({ createdAt: -1 });
 
     res.status(201).json({
@@ -129,7 +129,7 @@ exports.drive = (req, res) => {
 };
 
 exports.ride = (req, res) => {
-  User.findById(req.auth._id, (err, user) => {
+  User.findById(req.auth._id, async (err, user) => {
     // if (err)
     //     return res.status(500).end();
     if (user.active_trip == undefined || user.active_trip == null) {
@@ -206,6 +206,7 @@ exports.ride = (req, res) => {
               }));
               trip.riders.push(user._id);
               trip.available_riders = !(trip.riders.length === trip.max_riders);
+
               trip.save((err, trip) => {
                 res.status(200).json(trip);
                 user.active_trip = trip._id;
@@ -216,8 +217,14 @@ exports.ride = (req, res) => {
                 return res.status(500).end();
               });
             });
+
         }
       );
+      await sendMail({
+        email: user.email,
+        subject: "Car booking Request",
+        message: `Hello ${user.name + user.lastname}, Your Car ride has been Booked Please Track Your journey on our Website Thankyou.`,
+      });
     } else {
       res.statusMessage = "A trip is already active";
       return res.status(400).end();
@@ -228,13 +235,7 @@ exports.ride = (req, res) => {
 exports.bookRide = (req, res) => {
   User.findById(req.auth._id, async (err, user) => {
     if (user.activeTrip == undefined || user.activeTrip == null) {
-      //
-      // let startDateTime = new Date(req.body.dateTime);
-      // startDateTime.setMinutes(startDateTime.getMinutes() - offsetDurationInMinutes);
-      // let endDateTime = new Date(req.body.dateTime);
-      // endDateTime.setMinutes(endDateTime.getMinutes() + offsetDurationInMinutes);
-      // console.log("Reached")
-      // console.log(req.auth._id)
+
       const userFind = await User.findById(req.auth?._id);
       const userEmail = userFind.email;
       const rideObj = new Ride({

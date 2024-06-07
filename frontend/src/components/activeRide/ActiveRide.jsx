@@ -235,7 +235,7 @@ const ActiveRide = () => {
                   "Amount Paid"
                 ) : (
                   <StripeCheckout
-                    name="Yash Shop"
+                    name="Car Pooling"
                     image="https://api.freelogodesign.org/assets/thumb/logo/6294672_400.png?t=637945524870000000"
                     billingAddress
                     shippingAddress

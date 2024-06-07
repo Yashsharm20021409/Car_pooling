@@ -454,7 +454,7 @@ export default function ActiveTrip({ setActiveTrip }) {
   const [destination, setdestination] = useState("");
   const [datetime, setdatetime] = useState("");
   const [driver, setdriver] = useState("");
-  const [riders, setriders] = useState("");
+  const [riders, setriders] = useState("No Rider");
   const [ridePrice, setRidePrice] = useState(0);
 
   useEffect(() => {
@@ -621,9 +621,11 @@ export default function ActiveTrip({ setActiveTrip }) {
               <h3 style={{ marginTop: "1rem" }}>
                 <span className="trip-attributes">Driver</span>: {driver}
               </h3>
+              
               <h3>
-                <span className="trip-attributes">Rider(s)</span>: {riders}
+                <span className="trip-attributes">Rider's</span>: {riders}
               </h3>
+              
               {/* <h3>
                 <span className="trip-attributes">Price(s)</span>: {ridePrice}
               </h3> */}
